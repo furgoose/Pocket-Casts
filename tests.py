@@ -17,9 +17,28 @@ class PocketcastTest(unittest.TestCase):
     def test_get_trending(self):
         response = self.pocket.get_trending()
 
+    def test_get_episode_info(self):
+        response = self.pocket.get_episode_info('12012c20-0423-012e-f9a0-00163e1b201c',
+                                                'a35748e0-bb4d-0134-10a8-25324e2a541d')
+
+    def test_get_podcast_info(self):
+        response = self.pocket.get_podcast_info('12012c20-0423-012e-f9a0-00163e1b201c',
+                                                1, 3)
+
+    def test_get_episode_notes(self):
+        response = self.pocket.get_episode_notes('a35748e0-bb4d-0134-10a8-25324e2a541d')
+
     @unittest.skipIf(not PASSWORD, "You must have valid username/password")
     def test_get_subscribed_podcasts(self):
         response = self.pocket.get_subscribed_podcasts()
+
+    @unittest.skipIf(not PASSWORD, "You must have valid username/password")
+    def test_get_new_releases(self):
+        response = self.pocket.get_new_releases()
+
+    @unittest.skipIf(not PASSWORD, "You must have valid username/password")
+    def test_get_in_progress(self):
+        response = self.pocket.get_in_progress()
 
 if __name__ == '__main__':
     unittest.main()

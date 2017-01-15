@@ -10,21 +10,27 @@ class Pocketcasts(object):
         if password:
             self._login()
 
-    def _make_req(self, url, data=None):
+    def _make_req(self, url, method='GET', data=None):
         """Makes a HTTP GET/POST request
 
         Args:
             url (str): The url to request data from
+            method (str): The method to use. Defaults to 'GET'
             data (dict): Data to send with a POST request. Defaults to None.
 
         Returns:
             requests.models.Response: The response to the query
 
+        Raises:
+            Exception: If an invalid method is provided
+
         """
-        if data:
+        if method == 'POST' or data:
             req = requests.Request('POST', url, data=data, cookies=self.session.cookies)
-        else:
+        elif method == 'GET':
             req = requests.Request('GET', url, cookies=self.session.cookies)
+        else:
+            raise Exception("Invalid method")
         prepped = req.prepare()
         return self.session.send(prepped)
 
@@ -120,7 +126,8 @@ class Pocketcasts(object):
              'published_at': '2017-01-12 08:00:00',
              'size': 10465287,
              'title': 'How Watersheds Work',
-             'url': 'http://www.podtrac.com/pts/redirect.mp3/streaming.howstuffworks.com/sysk/2017-01-12-sysk-watersheds.mp3?awCollectionId=1003&awEpisodeId=923109',
+             'url': ('http://www.podtrac.com/pts/redirect.mp3/streaming.howstuffworks.com/sysk/'
+                     '2017-01-12-sysk-watersheds.mp3?awCollectionId=1003&awEpisodeId=923109'),
              'uuid': 'a35748e0-bb4d-0134-10a8-25324e2a541d'}
 
         """
@@ -128,7 +135,7 @@ class Pocketcasts(object):
             'uuid': uuid,
             'episode_uuid': episode_uuid
         }
-        return self._make_req("https://play.pocketcasts.com/web/podcasts/podcast.json", data=data).json()['episode']
+        return self._make_req('https://play.pocketcasts.com/web/podcasts/podcast.json', data=data).json()['episode']
 
     def get_podcast_info(self, uuid, page, sort):
         data = {
@@ -143,8 +150,16 @@ class Pocketcasts(object):
         data = {
             'uuid': episode_uuid
         }
-        return self._make_req("https://play.pocketcasts.com/web/episodes/show_notes.json", data=data)\
+        return self._make_req('https://play.pocketcasts.com/web/episodes/show_notes.json', data=data)\
             .json()['show_notes']
 
     def get_subscribed_podcasts(self):
-        return self._make_req("https://play.pocketcasts.com/web/podcasts/all.json", data={'': ''}).json()['podcasts']
+        return self._make_req('https://play.pocketcasts.com/web/podcasts/all.json', method='POST').json()['podcasts']
+
+    def get_new_releases(self):
+        attempt = self._make_req('https://play.pocketcasts.com/web/episodes/new_releases_episodes.json', method='POST')
+        return attempt.json()['episodes']
+
+    def get_in_progress(self):
+        attempt = self._make_req('https://play.pocketcasts.com/web/episodes/in_progress_episodes.json', method='POST')
+        return attempt.json()['episodes']
