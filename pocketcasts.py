@@ -1,5 +1,9 @@
+"""Unofficial API for pocketcasts.com"""
 import requests
 
+__version__ = "0.1"
+__author__ = "Fergus Longley"
+__url__ = "https://github.com/exofudge/Pocket-Casts"
 
 class Pocketcasts(object):
     def __init__(self, email, password=None):
