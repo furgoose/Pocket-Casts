@@ -22,8 +22,7 @@ class PocketcastTest(unittest.TestCase):
                                                 'a35748e0-bb4d-0134-10a8-25324e2a541d')
 
     def test_get_podcast_info(self):
-        response = self.pocket.get_podcast_info('12012c20-0423-012e-f9a0-00163e1b201c',
-                                                1, 3)
+        response = self.pocket.get_podcast_episodes('12012c20-0423-012e-f9a0-00163e1b201c', '1', '1')
 
     def test_get_episode_notes(self):
         response = self.pocket.get_episode_notes('a35748e0-bb4d-0134-10a8-25324e2a541d')
