@@ -17,12 +17,11 @@ class PocketcastTest(unittest.TestCase):
     def test_get_trending(self):
         response = self.pocket.get_trending()
 
-    def test_get_episode_info(self):
-        response = self.pocket.get_episode_info('12012c20-0423-012e-f9a0-00163e1b201c',
-                                                'a35748e0-bb4d-0134-10a8-25324e2a541d')
+    def test_get_podcast(self):
+        response = self.pocket.get_podcast('12012c20-0423-012e-f9a0-00163e1b201c')
 
-    def test_get_podcast_info(self):
-        response = self.pocket.get_podcast_episodes('12012c20-0423-012e-f9a0-00163e1b201c', '1', '1')
+    def test_get_podcast_episodes(self):
+        response = self.pocket.get_podcast_episodes('12012c20-0423-012e-f9a0-00163e1b201c')
 
     def test_get_episode_notes(self):
         response = self.pocket.get_episode_notes('a35748e0-bb4d-0134-10a8-25324e2a541d')

@@ -1,5 +1,7 @@
 """Unofficial API for pocketcasts.com"""
 import requests
+from podcast import Podcast
+from episode import Episode
 
 __version__ = "0.1.1"
 __author__ = "Fergus Longley"
@@ -63,7 +65,7 @@ class Pocketcasts(object):
         """Get the top podcasts
 
         Returns:
-            list: A list of the top 100 podcasts
+            list: A list of the top 100 podcasts as Podcast objects
 
         Raises:
             Exception: If the top charts cannot be obtained
@@ -72,13 +74,17 @@ class Pocketcasts(object):
         page = self._make_req("https://static.pocketcasts.com/discover/json/popular_world.json").json()
         if page['status'] != 'ok':
             raise Exception('Getting top charts failed')
-        return page['result']['podcasts']
+        results = []
+        for podcast in page['result']['podcasts']:
+            uuid = podcast.pop('uuid')
+            results.append(Podcast(uuid, self, **podcast))
+        return results
 
     def get_featured(self):
         """Get the featured podcasts
 
         Returns:
-            list: A list of the 30 featured podcasts
+            list: A list of the 30 featured podcasts as Podcast objects
 
         Raises:
             Exception: If the featured podcasts cannot be obtained
@@ -87,123 +93,129 @@ class Pocketcasts(object):
         page = self._make_req("https://static.pocketcasts.com/discover/json/featured.json").json()
         if page['status'] != 'ok':
             raise Exception('Getting featured podcasts failed')
-        return page['result']['podcasts']
+        results = []
+        for podcast in page['result']['podcasts']:
+            uuid = podcast.pop('uuid')
+            results.append(Podcast(uuid, self, **podcast))
+        return results
 
     def get_trending(self):
         """Get the trending podcasts
 
         Returns:
-            list: A list of the 100 trending podcasts
+            list: A list of the 100 trending podcasts as Podcast objects
 
         Raises:
             Exception: If the trending podcasts cannot be obtained
 
         """
         page = self._make_req("https://static.pocketcasts.com/discover/json/trending.json").json()
-        if page['status'] != 'ok':
-            raise Exception('Getting trending podcasts failed')
-        return page['result']['podcasts']
+        results = []
+        for podcast in page['result']['podcasts']:
+            uuid = podcast.pop('uuid')
+            results.append(Podcast(uuid, self, **podcast))
+        return results
 
-    def get_episode_info(self, uuid, episode_uuid):
-        # TODO figure out what id is
-        """Get the episode information for a podcast
+    def get_episode(self, pod, e_uuid):
+        # TODO figure out what id is/does
+        """Returns an episode object corresponding to the uuid's provided
 
         Args:
-            uuid (str): The podcast UUID
-            episode_uuid (str): The episode UUID
+            pod (class): The podcast class
+            e_uuid (str): The episode UUID
 
         Returns:
-            dict: a dictionary of information related to the episode, including the following keys
-                duration: the duration of the episode in seconds
-                file_type: The file type
-                id: Unused
-                published_at: The time the episode was released at
-                size: The file size in bits
-                title: The title of the episode
-                url: The download/streaming url
-                uuid: the uuid of the episode
+            class: An Episode class with all information about an episode
 
         Examples:
             >>> p = Pocketcasts(email='email@email.com')
-            >>> p.get_episode_info('12012c20-0423-012e-f9a0-00163e1b201c', 'a35748e0-bb4d-0134-10a8-25324e2a541d')
-            {'duration': '1934',
-             'file_type': 'audio/mpeg',
-             'id': None,
-             'published_at': '2017-01-12 08:00:00',
-             'size': 10465287,
-             'title': 'How Watersheds Work',
-             'url': ('http://www.podtrac.com/pts/redirect.mp3/streaming.howstuffworks.com/sysk/'
-                     '2017-01-12-sysk-watersheds.mp3?awCollectionId=1003&awEpisodeId=923109'),
-             'uuid': 'a35748e0-bb4d-0134-10a8-25324e2a541d'}
+            >>> pod = p.get_podcast('12012c20-0423-012e-f9a0-00163e1b201c')
+            >>> p.get_episode(pod, 'a35748e0-bb4d-0134-10a8-25324e2a541d')
+            <class 'episode.Episode'> ({
+            '_size': 10465287,
+            '_is_video': False,
+            '_url': 'http://.../2017-01-12-sysk-watersheds.mp3?awCollectionId=1003&awEpisodeId=923109',
+            '_id': None,
+            '_duration': '1934',
+            '_is_deleted': '',
+            '_title': 'How Watersheds Work',
+            '_file_type': 'audio/mpeg',
+            '_played_up_to': 1731,
+            '_published_at': '2017-01-12 08:00:00',
+            '_podcast': <class 'podcast.Podcast'> (...),
+            '_playing_status': 2,
+            '_starred': False,
+            '_uuid': 'a35748e0-bb4d-0134-10a8-25324e2a541d'})
 
         """
         data = {
-            'uuid': uuid,
-            'episode_uuid': episode_uuid
-        }
-        attempt = self._make_req('https://play.pocketcasts.com/web/podcasts/podcast.json', data=data).json()
-        return attempt['episode']
-
-    def get_podcast_info(self, uuid):
-        # TODO find a direct method for obtaining info
-        e_uuid = self.get_podcast_episodes(uuid, '1', '1')
-        data = {
-            'uuid': uuid,
+            'uuid': pod.uuid,
             'episode_uuid': e_uuid
         }
-        attempt = self._make_req('https://play.pocketcasts.com/web/podcasts/podcast.json', data=data).json()
-        return attempt['podcast']
+        attempt = self._make_req('https://play.pocketcasts.com/web/podcasts/podcast.json', data=data).json()['episode']
+        attempt.pop('uuid')
+        episode = Episode(e_uuid, pod, **attempt)
+        return episode
 
-    def get_podcast_episodes(self, uuid, page, sort):
-        """Get all episodes of a podcasts, 100 at a time, and the total number of episodes
+    def get_podcast(self, uuid):
+        data = {
+            'uuid': uuid
+        }
+        attempt = self._make_req('https://play.pocketcasts.com/web/podcasts/podcast.json', data=data).json()['podcast']
+        attempt.pop('uuid')
+        podcast = Podcast(uuid, self, **attempt)
+        return podcast
+
+    def get_podcast_episodes(self, pod, sort=Podcast.SortOrder.NewestToOldest):
+        """Get all episodes of a podcasts
 
         Args:
-            uuid (str): The podcast UUID
-            page (str): The page of results
-            sort (str): The sort order, 1 for Newest to oldest, 2 for Oldest to newest
+            pod (class): The podcast class
+            sort (int): The sort order, 3 for Newest to oldest, 2 for Oldest to newest
 
         Returns:
-            list: a list of 100 episodes from the filters provided, each episode of same form as get_episode_info
-                duration: the duration of the episode in seconds
-                file_type: The file type
-                id: Unused
-                is_deleted:
-                is_video:
-                played_up_to
-                playing_status
-                published_at: The time the episode was released at
-                size: The file size in bits
-                title: The title of the episode
-                url: The download/streaming url
-                uuid: the uuid of the episode
-            int: The total number of episodes
+            list: A list of Episode classes
 
         Examples:
             >>> p = Pocketcasts('email@email.com')
-            >>> p.get_podcast_episodes('12012c20-0423-012e-f9a0-00163e1b201c', '1', '1')
-            [{'duration': '1416',
-               'file_type': 'audio/mpeg',
-               'id': None,
-               'is_deleted': False,
-               'is_video': False,
-               'played_up_to': 0,
-               'playing_status': 1,
-               'published_at': '2009-04-02 18:17:12',
-               'size': 7797828,
-               'starred': False,
-               'title': 'Bizarre Ways to Die',
-               'url': 'http://www.podtrac.com/...',
-               'uuid': '13260d60-0423-012e-f9a0-00163e1b201c'},
-             ...], 952
+            >>> pod = p.get_podcast('12012c20-0423-012e-f9a0-00163e1b201c')
+            >>> p.get_podcast_episodes(pod)
+            [<class 'episode.Episode'> ({
+            '_size': 17829778,
+            '_is_video': False,
+            '_url': 'http://.../2017-02-21-sysk-death-tax-final.mp3?awCollectionId=1003&awEpisodeId=923250',
+            '_id': None,
+            '_duration': '3161',
+            '_is_deleted': 0,
+            '_title': 'The ins and outs of the DEATH TAX',
+            '_file_type': 'audio/mpeg',
+            '_played_up_to': 0,
+            '_published_at': '2017-02-21 08:00:00',
+            '_podcast': <class 'podcast.Podcast'> (...),
+            '_playing_status': 0,
+            '_starred': False,
+            '_uuid': '9189eba0-da79-0134-ebdd-4114446340cb'}),
+             ...]
 
         """
-        data = {
-            'uuid': uuid,
-            'page': page,
-            'sort': sort
-        }
-        attempt = self._make_req('https://play.pocketcasts.com/web/episodes/find_by_podcast.json', data=data).json()
-        return attempt['result']['episodes'], attempt['result']['total']
+        page = 1
+        more_pages = True
+        episodes = []
+        while more_pages:
+            data = {
+                'uuid': pod.uuid,
+                'page': page,
+                'sort': sort
+            }
+            attempt = self._make_req('https://play.pocketcasts.com/web/episodes/find_by_podcast.json', data=data).json()
+            for epi in attempt['result']['episodes']:
+                uuid = epi.pop('uuid')
+                episodes.append(Episode(uuid, podcast=pod, **epi))
+            if attempt['result']['total'] > len(episodes):
+                page += 1
+            else:
+                more_pages = False
+        return episodes
 
     def get_episode_notes(self, episode_uuid):
         data = {
@@ -215,16 +227,37 @@ class Pocketcasts(object):
     def get_subscribed_podcasts(self):
         if not self.password:
             raise Exception("Password required for this function")
-        return self._make_req('https://play.pocketcasts.com/web/podcasts/all.json', method='POST').json()['podcasts']
+        attempt = self._make_req('https://play.pocketcasts.com/web/podcasts/all.json', method='POST').json()
+        results = []
+        for podcast in attempt['podcasts']:
+            uuid = podcast.pop('uuid')
+            results.append(Podcast(uuid, self, **podcast))
+        return results
 
     def get_new_releases(self):
         if not self.password:
             raise Exception("Password required for this function")
         attempt = self._make_req('https://play.pocketcasts.com/web/episodes/new_releases_episodes.json', method='POST')
-        return attempt.json()['episodes']
+        results = []
+        podcasts = {}
+        for episode in attempt.json()['episodes']:
+            pod_uuid = episode['podcast_uuid']
+            if pod_uuid not in podcasts:
+                podcasts[pod_uuid] = self.get_podcast(pod_uuid)
+            uuid = episode.pop('uuid')
+            results.append(Episode(uuid, podcasts[pod_uuid], **episode))
+        return results
 
     def get_in_progress(self):
         if not self.password:
             raise Exception("Password required for this function")
         attempt = self._make_req('https://play.pocketcasts.com/web/episodes/in_progress_episodes.json', method='POST')
-        return attempt.json()['episodes']
+        results = []
+        podcasts = {}
+        for episode in attempt.json()['episodes']:
+            pod_uuid = episode['podcast_uuid']
+            if pod_uuid not in podcasts:
+                podcasts[pod_uuid] = self.get_podcast(pod_uuid)
+            uuid = episode.pop('uuid')
+            results.append(Episode(uuid, podcasts[pod_uuid], **episode))
+        return results
