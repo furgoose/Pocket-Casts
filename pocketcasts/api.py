@@ -1,7 +1,7 @@
 """Unofficial API for pocketcasts.com"""
 import requests
-from podcast import Podcast
-from episode import Episode
+from .podcast import Podcast
+from .episode import Episode
 
 __version__ = "0.1.1"
 __author__ = "Fergus Longley"
