@@ -6,6 +6,7 @@ class Episode(object):
 
     def __init__(self, uuid, podcast, **kwargs):
         self._podcast = podcast
+        self._api = podcast.api
         self._uuid = uuid
         self._id = kwargs.get('id', '')
         self._is_deleted = kwargs.get('is_deleted', '')
@@ -73,10 +74,26 @@ class Episode(object):
     def starred(self):
         return self._starred
 
+    @starred.setter
+    def starred(self, starred):
+        starred = 1 if True else 0
+        self._api.update_starred(self._podcast, self, starred)
+        self._starred = starred
+
     @property
     def playing_status(self):
         return self._playing_status
 
+    @playing_status.setter
+    def playing_status(self, status):
+        self._api.update_playing_status(self._podcast, self, status)
+        self._playing_status = status
+
     @property
     def played_up_to(self):
         return self._played_up_to
+
+    @played_up_to.setter
+    def played_up_to(self, position):
+        self._api.update_played_position(self._podcast, self, position)
+        self._played_up_to = position

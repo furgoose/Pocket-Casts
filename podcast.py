@@ -3,7 +3,7 @@ class Podcast(object):
         NewestToOldest = 3
         OldestToNewest = 2
 
-    def __init__(self, uuid, api=None, **kwargs):
+    def __init__(self, uuid, api, **kwargs):
         self._api = api
         self._uuid = uuid
         self._id = kwargs.get('id', '')
@@ -22,6 +22,10 @@ class Podcast(object):
 
     def __repr__(self):
         return "%s (%r)" % (self.__class__, self.__dict__)
+
+    @property
+    def api(self):
+        return self._api
 
     @property
     def uuid(self):
@@ -66,3 +70,18 @@ class Podcast(object):
     @property
     def thumbnail_url_small(self):
         return self._thumbnail_url
+
+    @property
+    def subscribed(self):
+        podcasts = self._api.get_subscribed_podcasts()
+        for x in podcasts:
+            if x.uuid == self.uuid:
+                return True
+        return False
+
+    @subscribed.setter
+    def subscribed(self, status):
+        if status:
+            self._api.subscribe_podcast(self)
+        else:
+            self._api.unsubscribe_podcast(self)

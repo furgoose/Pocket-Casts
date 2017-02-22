@@ -32,7 +32,9 @@ class Pocketcasts(object):
             Exception: If an invalid method is provided
 
         """
-        if method == 'POST' or data:
+        if method == 'JSON':
+            req = requests.Request('POST', url, json=data, cookies=self.session.cookies)
+        elif method == 'POST' or data:
             req = requests.Request('POST', url, data=data, cookies=self.session.cookies)
         elif method == 'GET':
             req = requests.Request('GET', url, cookies=self.session.cookies)
@@ -260,4 +262,62 @@ class Pocketcasts(object):
                 podcasts[pod_uuid] = self.get_podcast(pod_uuid)
             uuid = episode.pop('uuid')
             results.append(Episode(uuid, podcasts[pod_uuid], **episode))
+        return results
+
+    def update_starred(self, podcast, episode, starred):
+        data = {
+            'starred': starred,
+            'podcast_uuid': podcast.uuid,
+            'uuid': episode.uuid
+        }
+        self._make_req("https://play.pocketcasts.com/web/episodes/update_episode_star.json", data=data)
+        # TODO Check if successful or not
+
+    def update_playing_status(self, podcast, episode, status=Episode.PlayingStatus.Unplayed):
+        data = {
+            'playing_status': status,
+            'podcast_uuid': podcast.uuid,
+            'uuid': episode.uuid
+        }
+        attempt = self._make_req("https://play.pocketcasts.com/web/episodes/update_episode_position.json", data=data)
+        if attempt.json()['status'] != 'ok':
+            raise Exception('Sorry your update failed.')
+        return True
+
+    def update_played_position(self, podcast, episode, position):
+        data = {
+            'uuid': episode.uuid,
+            'podcast_uuid': podcast.uuid,
+            'playing_status': episode.playing_status,
+            'duration': episode.duration,
+            'played_up_to': position
+        }
+        attempt = self._make_req("https://play.pocketcasts.com/web/episodes/update_episode_position.json",
+                                 method='JSON', data=data)
+        if attempt.json()['status'] != 'ok':
+            raise Exception('Sorry your update failed.')
+        return True
+
+    def subscribe_podcast(self, podcast):
+        data = {
+            'uuid': podcast.uuid
+        }
+        attempt = self._make_req("https://play.pocketcasts.com/web/podcasts/subscribe.json", data=data)
+        print(attempt)
+
+    def unsubscribe_podcast(self, podcast):
+        data = {
+            'uuid': podcast.uuid
+        }
+        self._make_req("https://play.pocketcasts.com/web/podcasts/unsubscribe.json", data=data)
+
+    def search_podcasts(self, search_str):
+        data = {
+            'term': search_str
+        }
+        attempt = self._make_req("https://play.pocketcasts.com/web/podcasts/search.json", data=data)
+        results = []
+        for podcast in attempt.json()['podcasts']:
+            uuid = podcast.pop('uuid')
+            results.append(Podcast(uuid, self, **podcast))
         return results
