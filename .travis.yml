@@ -1,19 +1,16 @@
 language: python
 python:
-  - "3.2"
   - "3.3"
   - "3.4"
   - "3.5"
-  - "3.5-dev" # 3.5 development branch
-  - "3.6"
-  - "3.6-dev" # 3.6 development branch
-  - "3.7-dev" # 3.7 development branch
-  - "nightly" # currently points to 3.7-dev
-install: "pip install -r requirements.txt"
+cache: pip
+install:
+  - pip install -r requirements.txt
+  - pip install -U pytest
 script: pytest tests/tests.py
 deploy:
   provider: pypi
-  user: Your username
+  user: exofudge
   password:
     secure: ejFkRqUQ1ahfDcmF71xcBSgq2ZmTSgxDwdBb/3dHCiABVMn6RBMAKcx3uMO03Pxl4YlkphxndvHcVQSjZw0j30ZwEQqT52l8sj7/+HsbitZKl4DKmWgMOvAi6iyjs0YEcNFMsBUh4ZMlC27B9MyJ0Q5mfZFCU6+n5lFz6YrKVnSdcf585K22ulqTc7rF2rK1UjDjPRJ3QrLiaCPzmDzIiaU632JYYUbnbiycJ725mcozbCQS85QQZt3SgS2QF/0PAXEs2QxPreb7/JDHLjSoAW5uw69X/Osi3XX1X53tY8BXiIBhugQaGaAoDaNSac63fKMlml9srMNz9vCnDktH1qWBuuWNfkZxDMkI44XwYzxTpEkgEQDQoCZsSjHvXJJwfMDy7wiPH5rHwtKRTsfkoNa9di6zFJfccJbixOYr1zanIA5J7PftQwfrtwjMpgvi7uUTns7Xc/oEm2fsyr3Gvd6eGW+pXsC+1fBdqWvTAx7egMoYvr6h8KFeSRKo2axJ6QLZy4QfWIJY0eqzlsfHNlbjH+Hfd9UXhGOkgh8sECEb3RcFhNt6wWS930RnBPIC3/pV+Jqdqg9ZwLMl4q7+c5w0lLvJCIMbJutPTlOcS72yQihbb5FqztRJi7tiLT+hgDpnYeJMZJmqskuO9FcZ5Stb34BHrYl+Biw2HoXXOW8=
   on:
