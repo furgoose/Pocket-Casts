@@ -1,6 +1,8 @@
 # Pocket-Casts
 ---
-[![Build Status](https://travis-ci.org/exofudge/Pocket-Casts.svg?branch=master)](https://travis-ci.org/exofudge/Pocket-Casts) [![Coverage Status](https://coveralls.io/repos/github/exofudge/Pocket-Casts/badge.svg?branch=master)](https://coveralls.io/github/exofudge/Pocket-Casts?branch=master)
+[![Build Status](https://travis-ci.org/exofudge/Pocket-Casts.svg?branch=master)](https://travis-ci.org/exofudge/Pocket-Casts)
+[![Coverage Status](https://coveralls.io/repos/github/exofudge/Pocket-Casts/badge.svg?branch=master)](https://coveralls.io/github/exofudge/Pocket-Casts?branch=master)
+
 Unofficial Pocket Casts API writter in Python 3.
 ## Installation
 ```sh
