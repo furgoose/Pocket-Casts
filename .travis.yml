@@ -7,10 +7,12 @@ cache: pip
 install:
 - pip install -r requirements.txt
 - pip install -U pytest
-- python setup.py develop
 - pip install pytest-cov
 - pip install coveralls
-script: pytest tests/tests.py
+script:
+ - python setup.py develop
+ - pytest tests/tests.py
+ - pytest --cov=pocketcasts --cov-report term-missing
 deploy:
   provider: pypi
   user: exofudge
