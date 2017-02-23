@@ -17,11 +17,11 @@ setup(
 
     classifiers=[
         'Development Status :: 4 - Beta',
-        'License :: MIT License',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.5',
     ],
 
-    packages=find_packages(),
+    packages=find_packages(exclude=['testing']),
 
     keywords='podcasts pocketcasts',
 

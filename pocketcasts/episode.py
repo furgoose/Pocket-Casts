@@ -76,8 +76,8 @@ class Episode(object):
 
     @starred.setter
     def starred(self, starred):
-        starred = 1 if True else 0
-        self._api.update_starred(self._podcast, self, starred)
+        star = 1 if starred else 0
+        self._api.update_starred(self._podcast, self, star)
         self._starred = starred
 
     @property

@@ -3,7 +3,7 @@ import requests
 from .podcast import Podcast
 from .episode import Episode
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __author__ = "Fergus Longley"
 __url__ = "https://github.com/exofudge/Pocket-Casts"
 
@@ -264,6 +264,20 @@ class Pocketcasts(object):
             results.append(Episode(uuid, podcasts[pod_uuid], **episode))
         return results
 
+    def get_starred(self):
+        if not self.password:
+            raise Exception("Password required for this function")
+        attempt = self._make_req('https://play.pocketcasts.com/web/episodes/starred_episodes.json', method='POST')
+        results = []
+        podcasts = {}
+        for episode in attempt.json()['episodes']:
+            pod_uuid = episode['podcast_uuid']
+            if pod_uuid not in podcasts:
+                podcasts[pod_uuid] = self.get_podcast(pod_uuid)
+            uuid = episode.pop('uuid')
+            results.append(Episode(uuid, podcasts[pod_uuid], **episode))
+        return results
+
     def update_starred(self, podcast, episode, starred):
         data = {
             'starred': starred,
@@ -302,8 +316,7 @@ class Pocketcasts(object):
         data = {
             'uuid': podcast.uuid
         }
-        attempt = self._make_req("https://play.pocketcasts.com/web/podcasts/subscribe.json", data=data)
-        print(attempt)
+        self._make_req("https://play.pocketcasts.com/web/podcasts/subscribe.json", data=data)
 
     def unsubscribe_podcast(self, podcast):
         data = {
