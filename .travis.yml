@@ -11,8 +11,7 @@ install:
 - pip install coveralls
 script:
  - python setup.py develop
- - pytest tests/tests.py
- - pytest --cov=pocketcasts --cov-report term-missing
+ - pytest tests/tests.py --cov=pocketcasts --cov-report term-missing
 deploy:
   provider: pypi
   user: exofudge
