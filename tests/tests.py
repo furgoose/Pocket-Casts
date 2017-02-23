@@ -1,9 +1,7 @@
 import os
-import sys
 import unittest
 import pocketcasts
 
-sys.path.insert(0, os.path.dirname(__file__))
 
 USERNAME = os.environ.get('POCKETCAST_USER')
 PASSWORD = os.environ.get('POCKETCAST_PASSWORD')
