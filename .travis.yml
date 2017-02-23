@@ -1,12 +1,12 @@
 language: python
 python:
-  - "3.3"
-  - "3.4"
-  - "3.5"
+- '3.3'
+- '3.4'
+- '3.5'
 cache: pip
 install:
-  - pip install -r requirements.txt
-  - python setup.py develop
+- pip install -r requirements.txt
+- python setup.py develop
 script: pytest tests/tests.py
 deploy:
   provider: pypi
@@ -15,3 +15,7 @@ deploy:
     secure: ejFkRqUQ1ahfDcmF71xcBSgq2ZmTSgxDwdBb/3dHCiABVMn6RBMAKcx3uMO03Pxl4YlkphxndvHcVQSjZw0j30ZwEQqT52l8sj7/+HsbitZKl4DKmWgMOvAi6iyjs0YEcNFMsBUh4ZMlC27B9MyJ0Q5mfZFCU6+n5lFz6YrKVnSdcf585K22ulqTc7rF2rK1UjDjPRJ3QrLiaCPzmDzIiaU632JYYUbnbiycJ725mcozbCQS85QQZt3SgS2QF/0PAXEs2QxPreb7/JDHLjSoAW5uw69X/Osi3XX1X53tY8BXiIBhugQaGaAoDaNSac63fKMlml9srMNz9vCnDktH1qWBuuWNfkZxDMkI44XwYzxTpEkgEQDQoCZsSjHvXJJwfMDy7wiPH5rHwtKRTsfkoNa9di6zFJfccJbixOYr1zanIA5J7PftQwfrtwjMpgvi7uUTns7Xc/oEm2fsyr3Gvd6eGW+pXsC+1fBdqWvTAx7egMoYvr6h8KFeSRKo2axJ6QLZy4QfWIJY0eqzlsfHNlbjH+Hfd9UXhGOkgh8sECEb3RcFhNt6wWS930RnBPIC3/pV+Jqdqg9ZwLMl4q7+c5w0lLvJCIMbJutPTlOcS72yQihbb5FqztRJi7tiLT+hgDpnYeJMZJmqskuO9FcZ5Stb34BHrYl+Biw2HoXXOW8=
   on:
     tags: true
+env:
+  global:
+  - secure: E6LlPnEH/W2z2sTGw7nK/cIhgOpK7IhGirn+a7AXGJrYkZIumhQWxXLZ/veHxQeLEQqJNlTXauwPUQP2JD2nJK6zrQc/sNY7wLcGovrtvXqY3dRWH0QW1C8SkjhzTd0UvWcikW8Z3Yhow/XoBRe15PXJFTXoGjxPKfCRSewzVgq87StzZ4TORh6K3qr+yVSu49EylEYuyg9WUUQQBXgL6zzyI863Gv/VUar0a5V5Q1/kHCzEYZJSj7x9bcYjVWaz2B3Nv/joBKsoZP68fMpro3IyyOhoN/0IG5SyUIjZfX82NNLUkTuvWG8ThQVlpCebEUKYGD/XpvXTIclvjbiOtdB1R9zfcRrJkaguMxMe2Mt8pAo+mkDMAycyhPEaGP7NtuIw9e6jz/s9Ft42RhRrIrSsZi/HfRR7CmLO7vNzM+Imb8+rReIhfp5BKYG4HdMHxJaamcgR2887iO2W/6mp7orKV/afJq+wnpgvyeWBEFLV25eL84NLbAxTgyvhnUFwmb5j1pYQ/JEp+2mB0zwl2sqUstmLkfJo6Jqwv4wISMRbZGRALJh5r4TpdK1g4wLkC466CX5HpvsRNGoxb7gQXeb77jCB4viVwUDwpiK5SJnK1XtcEYxzymbCjwifSXiK6ru0gT1yGpioiQceS14+oQ1UxKEEoK6LM8TJsd7m29U=
+  - secure: Rn2zXGnt3ZZTElFAPNQvTdvNemyocWzK2pu2RZ7urb4y296vxfjFykxaa7LTaPtQ2P1Wn+5Z6fK1/It/8QCDxr2A4uLtty/9BRLRbkHoM24xnqNPMTekE3D0LNqR+tu6UDZFa7muEg69jm+QFdiHX4m7qAefdBO0pOWXG0zSp9oJclQaO7awHxN95QKimrcPgW8ISt/aoBTnnvnd6ArcZ5v56bBcm90iVqeoR8lDm7jaTpUDxPdZcEiFCYQTxzjGQIuR2kChPbp7+oy9Shmw+Pj7XlM+GjtB69uZRCy/A97mYj5kt/gYSsq4OyowQivEqOrHxmx+DG8npZd9iOjDRXr1o3W0rm+jL4CLrh19sHVTGq42NnkQKUG0czEKIGDSQ2Ktdj/4z4J3sQJ3DQpCrxrWg+B/6LjeuhmEHJrAXM46ybHwWF6l0UpDyMZJbVOd3Aof3qU26shpYxQ4y3tl8G27ufZepv4k+eCvrUFNiM61IOwBbwkGLiTfXqbPjxhmqV9AOkuftIR0WAflXZzgiI0GbaPQht9FToTMzh6fH9PHrM2zKHCBj4BSKQT2tmD0klW0ubmWVHxgDSo1y+SauANWbY+g5oiRNOj5f8fdDrIGTJMOvBgiVIwJHYuLXNCHCJh4oJAuYFsZAUkFM2/uqX0jfT3dv3oI6jNReW5px/w=
