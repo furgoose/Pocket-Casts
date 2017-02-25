@@ -1,5 +1,4 @@
 # Pocket-Casts
----
 [![Build Status](https://travis-ci.org/exofudge/Pocket-Casts.svg?branch=master)](https://travis-ci.org/exofudge/Pocket-Casts)
 [![Coverage Status](https://coveralls.io/repos/github/exofudge/Pocket-Casts/badge.svg?branch=master)](https://coveralls.io/github/exofudge/Pocket-Casts?branch=master)
 
@@ -39,6 +38,7 @@ $ python setup.py install
 - pocket. **subscribe_podcast(podcast)**
 - pocket. **unsubscribe_podcast(podcast)**
 - pocket. **search_podcasts(search_str)**
+
 #### get_top_charts()
 Returns the top charts currently on the pocketcasts website, as a list of Podcast classes
 ```python

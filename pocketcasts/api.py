@@ -9,13 +9,12 @@ __url__ = "https://github.com/exofudge/Pocket-Casts"
 
 
 class Pocketcasts(object):
-    def __init__(self, email, password=None):
+    def __init__(self, email, password):
         self.username = email
         self.password = password
 
         self.session = requests.Session()
-        if password:
-            self._login()
+        self._login()
 
     def _make_req(self, url, method='GET', data=None):
         """Makes a HTTP GET/POST request
@@ -58,7 +57,7 @@ class Pocketcasts(object):
         attempt = self._make_req(login_url, data=data)
 
         # TODO Find a more robust way to check if login failed
-        if "Oops, looks like your email or password is incorrect." in attempt.text:
+        if "Invalid email or password" in attempt.text:
             raise Exception("Login Failed")
         else:
             return True
@@ -74,8 +73,6 @@ class Pocketcasts(object):
 
         """
         page = self._make_req("https://static.pocketcasts.com/discover/json/popular_world.json").json()
-        if page['status'] != 'ok':
-            raise Exception('Getting top charts failed')
         results = []
         for podcast in page['result']['podcasts']:
             uuid = podcast.pop('uuid')
@@ -93,8 +90,6 @@ class Pocketcasts(object):
 
         """
         page = self._make_req("https://static.pocketcasts.com/discover/json/featured.json").json()
-        if page['status'] != 'ok':
-            raise Exception('Getting featured podcasts failed')
         results = []
         for podcast in page['result']['podcasts']:
             uuid = podcast.pop('uuid')
@@ -227,8 +222,6 @@ class Pocketcasts(object):
             .json()['show_notes']
 
     def get_subscribed_podcasts(self):
-        if not self.password:
-            raise Exception("Password required for this function")
         attempt = self._make_req('https://play.pocketcasts.com/web/podcasts/all.json', method='POST').json()
         results = []
         for podcast in attempt['podcasts']:
@@ -237,8 +230,6 @@ class Pocketcasts(object):
         return results
 
     def get_new_releases(self):
-        if not self.password:
-            raise Exception("Password required for this function")
         attempt = self._make_req('https://play.pocketcasts.com/web/episodes/new_releases_episodes.json', method='POST')
         results = []
         podcasts = {}
@@ -251,8 +242,6 @@ class Pocketcasts(object):
         return results
 
     def get_in_progress(self):
-        if not self.password:
-            raise Exception("Password required for this function")
         attempt = self._make_req('https://play.pocketcasts.com/web/episodes/in_progress_episodes.json', method='POST')
         results = []
         podcasts = {}
@@ -265,8 +254,6 @@ class Pocketcasts(object):
         return results
 
     def get_starred(self):
-        if not self.password:
-            raise Exception("Password required for this function")
         attempt = self._make_req('https://play.pocketcasts.com/web/episodes/starred_episodes.json', method='POST')
         results = []
         podcasts = {}
@@ -288,15 +275,14 @@ class Pocketcasts(object):
         # TODO Check if successful or not
 
     def update_playing_status(self, podcast, episode, status=Episode.PlayingStatus.Unplayed):
+        if status not in [0, 2, 3]:
+            raise Exception('Invalid status.')
         data = {
             'playing_status': status,
             'podcast_uuid': podcast.uuid,
             'uuid': episode.uuid
         }
-        attempt = self._make_req("https://play.pocketcasts.com/web/episodes/update_episode_position.json", data=data)
-        if attempt.json()['status'] != 'ok':
-            raise Exception('Sorry your update failed.')
-        return True
+        self._make_req("https://play.pocketcasts.com/web/episodes/update_episode_position.json", data=data)
 
     def update_played_position(self, podcast, episode, position):
         data = {
