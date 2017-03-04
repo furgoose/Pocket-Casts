@@ -69,7 +69,7 @@ class Podcast(object):
 
     @property
     def thumbnail_url_small(self):
-        return self._thumbnail_url
+        return self._thumbnail_url_small
 
     @property
     def subscribed(self):

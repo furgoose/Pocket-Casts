@@ -19,17 +19,10 @@ class Pocketcasts(object):
     def _make_req(self, url, method='GET', data=None):
         """Makes a HTTP GET/POST request
 
-        Args:
-            url (str): The url to request data from
-            method (str): The method to use. Defaults to 'GET'
-            data (dict): Data to send with a POST request. Defaults to None.
-
-        Returns:
-            requests.models.Response: The response to the query
-
-        Raises:
-            Exception: If an invalid method is provided
-
+        :param url: A string, the url to make a request to
+        :param method: A string, The method to use. Defaults to 'GET'
+        :param data: A dict, data to send with a POST request. Defaults to None.
+        :return: A :class:`response.models.Response`
         """
         if method == 'JSON':
             req = requests.Request('POST', url, json=data, cookies=self.session.cookies)
@@ -215,6 +208,11 @@ class Pocketcasts(object):
         return episodes
 
     def get_episode_notes(self, episode_uuid):
+        """
+
+        :param episode_uuid:
+        :return:
+        """
         data = {
             'uuid': episode_uuid
         }
