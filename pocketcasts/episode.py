@@ -1,7 +1,7 @@
 class Episode(object):
     class PlayingStatus(object):
-        Playing = 0
-        Unplayed = 2
+        Unplayed = 0
+        Playing = 2
         Played = 3
 
     def __init__(self, uuid, podcast, **kwargs):

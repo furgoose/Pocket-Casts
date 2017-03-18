@@ -18,6 +18,8 @@ class Podcast(object):
 
         self._thumbnail_url = kwargs.get('thumbnail_url', '')
         self._thumbnail_small = kwargs.get('thumbnail_url_small', '')
+        if self._thumbnail_small == "":
+            self._thumbnail_small = "http://static.pocketcasts.com/discover/images/200/{}.jpg".format(uuid)
         self._media_type = kwargs.get('media_type', '')
 
     def __repr__(self):
