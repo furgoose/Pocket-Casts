@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Episode(object):
     class PlayingStatus(object):
         Unplayed = 0
@@ -17,7 +19,7 @@ class Episode(object):
         self._title = kwargs.get('title', '')
         self._url = kwargs.get('url', '')
         self._duration = kwargs.get('duration', '')
-        self._published_at = kwargs.get('published_at', '')
+        self._published_at = datetime.strptime(kwargs.get('published_at', ''), '%Y-%m-%d %H:%M:%S')
         self._starred = bool(kwargs.get('starred', ''))
 
         self._playing_status = kwargs.get('playing_status', Episode.PlayingStatus.Unplayed)
@@ -87,6 +89,8 @@ class Episode(object):
     @playing_status.setter
     def playing_status(self, status):
         self._api.update_playing_status(self._podcast, self, status)
+        if status == self.PlayingStatus.Unplayed:
+            self._api.update_played_position(self._podcast, self, 0)
         self._playing_status = status
 
     @property
