@@ -3,7 +3,7 @@ import requests
 from .podcast import Podcast
 from .episode import Episode
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 __author__ = "Fergus Longley"
 __url__ = "https://github.com/exofudge/Pocket-Casts"
 

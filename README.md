@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/exofudge/Pocket-Casts/badge.svg?branch=master)](https://coveralls.io/github/exofudge/Pocket-Casts?branch=master)
 [![Code Climate](https://codeclimate.com/github/exofudge/Pocket-Casts/badges/gpa.svg)](https://codeclimate.com/github/exofudge/Pocket-Casts)
 
-Unofficial Pocket Casts API writter in Python 3.
+Unofficial Pocket Casts API written in Python 3.
 ## Installation
 ```sh
 $ pip install pocketcasts-api
@@ -16,9 +16,7 @@ $ python setup.py install
 ## Usage
 ```python
 >>> import pocketcasts
->>> pocket = pocketcasts.Pocketcasts('user@email.com')
-# alternatively
->>> pocket = pocketcasts.Pocketcasts('user@email.com', password='optional')
+>>> pocket = pocketcasts.Pocketcasts('user@email.com', password='password')
 ```
 ### Methods
 #### Summary
@@ -42,7 +40,7 @@ $ python setup.py install
 
 #### get_top_charts()
 Returns the top charts currently on the pocketcasts website, as a list of Podcast classes
-```python
+```
 >>> pocket = pocketcasts.Pocketcasts('user@email.com')
 >>> print(pocket.get_top_charts())
 [<class 'pocketcasts.podcast.Podcast'> (
