@@ -62,22 +62,24 @@ class PocketcastTest(unittest.TestCase):
         epi = self.pocket.get_podcast_episodes(pod)[-1]
         epi.playing_status = 3
 
-    @unittest.expectedFailure
     def test_invalid_update_playing_status(self):
         pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
         epi = self.pocket.get_podcast_episodes(pod)[-1]
-        epi.playing_status = 'invalid'
+        with self.assertRaises(Exception) as context:
+            epi.playing_status = 'invalid'
+            self.assertTrue('Sorry your update failed.' in context.exception)
 
     def test_update_played_position(self):
         pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
         epi = self.pocket.get_podcast_episodes(pod)[-1]
         epi.played_up_to = 2
 
-    @unittest.expectedFailure
     def test_invalid_played_position(self):
         pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
         epi = self.pocket.get_podcast_episodes(pod)[-1]
-        epi.played_up_to = 'invalid'
+        with self.assertRaises(Exception) as context:
+            epi.played_up_to = 'invalid'
+            self.assertTrue('Sorry your update failed.' in context.exception)
 
     def test_update_starred(self):
         pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
