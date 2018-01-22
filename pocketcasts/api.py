@@ -35,10 +35,8 @@ class Pocketcasts(object):
             requests.response.models.Response: A response object
 
         """
-        if method == 'JSON':
+        if data:
             req = requests.Request('POST', url, json=data, cookies=self._session.cookies)
-        elif method == 'POST' or data:
-            req = requests.Request('POST', url, data=data, cookies=self._session.cookies)
         elif method == 'GET':
             req = requests.Request('GET', url, cookies=self._session.cookies)
         else:
@@ -47,7 +45,7 @@ class Pocketcasts(object):
         return self._session.send(prepped)
 
     def _login(self):
-        """Authenticate using "https://play.pocketcasts.com/users/sign_in"
+        """Authenticate using "https://api.pocketcasts.com/users/login"
 
         Returns:
             bool: True is successful
@@ -57,12 +55,13 @@ class Pocketcasts(object):
 
         :return: 
         """
-        login_url = "https://play.pocketcasts.com/users/sign_in"
-        data = {"[user]email": self._username, "[user]password": self._password}
+        login_url = "https://api.pocketcasts.com/users/login"
+        data = {"email": self._username, 
+                "password": self._password,
+                "scope": "webplayer"}
         attempt = self._make_req(login_url, data=data)
 
-        # TODO Find a more robust way to check if login failed
-        if "Invalid email or password" in attempt.text:
+        if attempt.status_code == 401:
             raise Exception("Login Failed")
         else:
             return True
