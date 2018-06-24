@@ -5,34 +5,36 @@ class Podcast(object):
         NewestToOldest = 3
         OldestToNewest = 2
 
-    def __init__(self, uuid, api, **kwargs):
+    def __init__(self, api, **kwargs):
         """
 
         Args:
-            uuid (str): Podcast UUID
             api (pocketcasts.Pocketcasts): The API object
             **kwargs: Other information about the podcast
         """
         self._api = api
-        self._uuid = uuid
-        self._id = kwargs.get('id', '')
+
+        self._uuid = kwargs.get('uuid', '')
         self._title = kwargs.get('title', '')
         self._author = kwargs.get('author', '')
         self._description = kwargs.get('description', '')
-        self._url = kwargs.get('url', '')
+        self._feed = kwargs.get('feed', '')
+        self._itunes = kwargs.get('itunes', '')
+        self._website = kwargs.get('website', '')
+
         self._episodes_sort_order = kwargs.get('episodes_sort_order', Podcast.SortOrder.NewestToOldest)
 
         self._language = kwargs.get('language', '')
         self._categories = str(kwargs.get('category', '')).split('\n')
 
         self._thumbnail_url_src = kwargs.get('thumbnail_url', '')
-        self._thumbnail_url_small = "http://static.pocketcasts.com/discover/images/130/{}.jpg".format(uuid)
-        self._thumbnail_url_medium = "http://static.pocketcasts.com/discover/images/200/{}.jpg".format(uuid)
-        self._thumbnail_url_large = "http://static.pocketcasts.com/discover/images/280/{}.jpg".format(uuid)
+        self._thumbnail_url_small = "http://static.pocketcasts.com/discover/images/130/{}.jpg".format(self.uuid)
+        self._thumbnail_url_medium = "http://static.pocketcasts.com/discover/images/200/{}.jpg".format(self.uuid)
+        self._thumbnail_url_large = "http://static.pocketcasts.com/discover/images/280/{}.jpg".format(self.uuid)
         self._media_type = kwargs.get('media_type', '')
 
     def __repr__(self):
-        return "%s (%r)" % (self.__class__, self.__dict__)
+        return f"{self.__class__} ({self.title})"
 
     @property
     def api(self):
@@ -43,11 +45,6 @@ class Podcast(object):
     def uuid(self):
         """Get the podcast UUID"""
         return self._uuid
-
-    @property
-    def id(self):
-        """Get the podcast ID"""
-        return self._id
 
     @property
     def title(self):
@@ -65,9 +62,9 @@ class Podcast(object):
         return self._description
 
     @property
-    def url(self):
-        """Get the podcast URL"""
-        return self._url
+    def website(self):
+        """Get the podcast website URL"""
+        return self._website
 
     @property
     def sort_order(self):
