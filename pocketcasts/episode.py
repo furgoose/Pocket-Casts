@@ -1,103 +1,55 @@
 from datetime import datetime
-from .podcast import Podcast
+from enum import Enum
+from .podcast import _Podcast as Podcast
 
-class Episode(object):
+def format_time(time_string):
+    for format in ('%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%d %H:%M:%S'):
+        try:
+            return datetime.strptime(time_string, format)
+        except ValueError:
+            pass
+    raise ValueError(f"No format found for {time_string}")
+
+class _Episode(object):
     """Class for podcast episodes"""
-    class PlayingStatus(object):
+    class PlayingStatus(Enum):
         """Class to allow ease of reference to play statuses"""
-        Unplayed = 0
-        Playing = 2
+        Playing = 1
+        Unplayed = 2
         Played = 3
 
-    def __init__(self, api, **kwargs):
+    def __init__(self, api, uuid, podcast=None, **kwargs):
         """
 
         Args:
-            uuid (str): Episode UUID
-            podcast (pocketcasts.Podcast): Podcast for the episode
+            api: Api object
             **kwargs: Other information about episode
         """
         self._api = api
+        self._podcast = podcast
+        self._uuid = uuid
 
-        self._uuid = kwargs.get('uuid', '')
-        self._title = kwargs.get('title', '')
-        self._duration = kwargs.get('duration', '')
-        self._size = kwargs.get('size', '')
+        self.update(**kwargs)
+        
+    def update(self, **kwargs):
+        self._title = kwargs.get('title')
+        self._duration = kwargs.get('duration')
+        self._file_size = kwargs.get('file_size')
+        self._file_type = kwargs.get('file_type')
+        self._type = kwargs.get('type')
+   
+        self._url = kwargs.get('url')
 
-        self._podcast = kwargs.get('podcast', '')
-        if 'podcastUuid' in kwargs:
-            self._podcast = Podcast(self._api, **{'uuid': kwargs['uuid'], 'title': kwargs['title']})        
-        self._url = kwargs.get('url', '')
-        self._published = kwargs.get('published', '')
-        if self._published != '':
-            self._published = datetime.strptime(self._published, '%Y-%m-%dT%H:%M:%SZ')
-        self._starred = bool(kwargs.get('starred', ''))
+        self._published = kwargs.get('published')
+        self._published = format_time(self._published) if self._published is not None else None    
+        
+        self._starred = kwargs.get('starred')
+        self._starred = bool(self._starred) if self._starred is not None else None
 
-        self._playing_status = kwargs.get('playing_status', Episode.PlayingStatus.Unplayed)
-        self._played_up_to = kwargs.get('played_up_to', '')
+        self._playing_status = kwargs.get('playingStatus')
+        self._playing_status = self.PlayingStatus(self._playing_status) if self._playing_status is not None else self.PlayingStatus.Unplayed
+
+        self._played_up_to = kwargs.get('played_up_to')
 
     def __repr__(self):
-        return f"{self.__class__} ({self.title})"
-
-    @property
-    def podcast(self):
-        """Get the podcast object for the episode"""
-        return self._podcast
-
-    @property
-    def uuid(self):
-        """Get the episode UUID"""
-        return self._uuid
-
-    @property
-    def size(self):
-        """Get the episode size"""
-        return self._size
-
-    @property
-    def title(self):
-        """Get the episode title"""
-        return self._title
-
-    @property
-    def url(self):
-        """Get the episode URL"""
-        return self._url
-
-    @property
-    def duration(self):
-        """Get the episode duration"""
-        return self._duration
-
-    @property
-    def starred(self):
-        """Get and set the starred status"""
-        return self._starred
-
-    @starred.setter
-    def starred(self, starred):
-        star = 1 if starred else 0
-        self._api.update_starred(self._podcast, self, star)
-        self._starred = starred
-
-    @property
-    def playing_status(self):
-        """Get and set the playing status"""
-        return self._playing_status
-
-    @playing_status.setter
-    def playing_status(self, status):
-        self._api.update_playing_status(self._podcast, self, status)
-        if status == self.PlayingStatus.Unplayed:
-            self._api.update_played_position(self._podcast, self, 0)
-        self._playing_status = status
-
-    @property
-    def played_up_to(self):
-        """Get and set the play duration"""
-        return self._played_up_to
-
-    @played_up_to.setter
-    def played_up_to(self, position):
-        self._api.update_played_position(self._podcast, self, position)
-        self._played_up_to = position
+        return f"{self.__class__} at {hex(id(self))} ({self._title})"
