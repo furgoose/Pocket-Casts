@@ -18,7 +18,7 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 
     packages=find_packages(exclude=['testing']),
@@ -26,4 +26,7 @@ setup(
     keywords='podcasts pocketcasts',
 
     install_requires=['requests'],
+
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
 )

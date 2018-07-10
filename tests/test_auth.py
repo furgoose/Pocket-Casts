@@ -1,31 +1,19 @@
 import os
-import unittest
 import pocketcasts
 
 
 USERNAME = os.environ.get('POCKETCAST_USER')
 PASSWORD = os.environ.get('POCKETCAST_PASSWORD')
 
-class PocketcastTest(unittest.TestCase):
-    pocket = pocketcasts.Pocketcasts(USERNAME, PASSWORD)
+if USERNAME is None or PASSWORD is None:
+    raise Exception("Set POCKETCAST_USER and POCKETCAST_PASSWORD environment variables to run tests")
 
-    def test_invalid_method(self):
-        self.assertRaises(Exception, self.pocket._make_req, 'test', method='INVALID')
-
-    def test_invalid_login(self):
-        self.assertRaises(Exception, pocketcasts.Pocketcasts, 'test', 'INVALID')
-
-    def test_get_top_charts(self):
-        response = self.pocket.get_top_charts()
-
-    def test_get_featured(self):
-        response = self.pocket.get_featured()
-
-    def test_get_trending(self):
-        response = self.pocket.get_trending()
+class PocketcastAuthTest(object):
+    client = pocketcasts.Pocketcasts()
+    client.login(USERNAME, PASSWORD)
 
     def test_get_podcast(self):
-        response = self.pocket.get_podcast('12012c20-0423-012e-f9a0-00163e1b201c')
+        response = self.client.get_podcast('12012c20-0423-012e-f9a0-00163e1b201c')
 
     def test_get_podcast_episodes(self):
         response = self.pocket.get_podcast_episodes(self.pocket.get_trending()[0])
