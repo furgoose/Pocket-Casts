@@ -9,9 +9,9 @@ class _Network(object):
         """
         self._id = id
 
-        self.update(**kwargs)
+        self._update(**kwargs)
         
-    def update(self, **kwargs):
+    def _update(self, **kwargs):
         self._title = kwargs.get('title')
         self._list = kwargs.get('list')
         self._description = kwargs.get('description')

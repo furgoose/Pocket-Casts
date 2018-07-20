@@ -29,9 +29,9 @@ class _Episode(object):
         self._podcast = podcast
         self._uuid = uuid
 
-        self.update(**kwargs)
+        self._update(**kwargs)
         
-    def update(self, **kwargs):
+    def _update(self, **kwargs):
         self._title = kwargs.get('title')
         self._duration = kwargs.get('duration')
         self._file_size = kwargs.get('file_size')

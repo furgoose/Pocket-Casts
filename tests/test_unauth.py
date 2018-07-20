@@ -29,7 +29,8 @@ def test_get_networks(client):
 
 @pytest.mark.xfail
 def test_get_episode(client):
-    client.get_episode("7b28c700-d4f1-0134-ebdd-4114446340cb")
+    episode = client.get_episode("7b28c700-d4f1-0134-ebdd-4114446340cb")
+    assert type(episode) == client.Episode
 
 @pytest.mark.xfail
 def test_get_podcast(client):
@@ -55,9 +56,24 @@ def test_get_in_progress(client):
 def test_get_starred(client):
     client.get_starred()
 
+@pytest.mark.xfail
 def test_update_starred(client):
-    client.update_starred('')
-    epi = client.get_episode("7b28c700-d4f1-0134-ebdd-4114446340cb")
-    print(epi._podcast)
-    epi.starred = True
-    epi.starred = False
+    client.update_starred('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a', True)
+    episode = client.get_episode('e92551b1-8eda-4cb1-9f04-4b3dea78829a')
+    assert episode.starred == True
+    client.update_starred('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a', False)
+    episode.update()
+    assert episode.starred == False
+
+@pytest.mark.xfail
+def test_queue_play_now(client):
+    client.queue_play_now('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a')
+
+@pytest.mark.xfail
+def test_queue_play_next(client):
+    client.queue_play_next('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a')
+
+@pytest.mark.xfail
+def test_get_queue(client):
+    queue = client.get_queue()
+    assert type(queue) == list

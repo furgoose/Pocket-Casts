@@ -21,7 +21,7 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
 
-    packages=find_packages(exclude=['testing']),
+    packages=find_packages(),
 
     keywords='podcasts pocketcasts',
 

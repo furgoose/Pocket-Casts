@@ -19,9 +19,9 @@ class _Podcast(object):
         self._api = api
         self._uuid = uuid
         
-        self.update(episodes, **kwargs)
+        self._update(episodes, **kwargs)
 
-    def update(self, episodes, **kwargs):
+    def _update(self, episodes, **kwargs):
         self._title = kwargs.get('title')
         self._author = kwargs.get('author')
         self._description = kwargs.get('description')

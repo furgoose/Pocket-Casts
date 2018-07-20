@@ -1,5 +1,4 @@
 """Unofficial API for pocketcasts.com"""
-import requests
 from requests import request
 from .podcast import _Podcast
 from .episode import _Episode
@@ -26,7 +25,7 @@ class Pocketcasts(object):
             if uuid not in Pocketcasts.Podcast.instances:
                 Pocketcasts.Podcast.instances[uuid] = _Podcast(api, uuid, episodes=episodes, **kwargs)
             else:
-                Pocketcasts.Podcast.instances[uuid].update(episodes, **kwargs)
+                Pocketcasts.Podcast.instances[uuid]._update(episodes, **kwargs)
             return Pocketcasts.Podcast.instances[uuid]
 
     class Episode:
@@ -35,7 +34,7 @@ class Pocketcasts(object):
             if uuid not in Pocketcasts.Episode.instances:
                 Pocketcasts.Episode.instances[uuid] = _Episode(api, uuid, podcast=podcast, **kwargs)
             else:
-                Pocketcasts.Episode.instances[uuid].update(**kwargs)
+                Pocketcasts.Episode.instances[uuid]._update(**kwargs)
             return Pocketcasts.Episode.instances[uuid]
 
     class Network:
@@ -44,7 +43,7 @@ class Pocketcasts(object):
             if id not in Pocketcasts.Network.instances:
                 Pocketcasts.Network.instances[id] = _Network(id, **kwargs)
             else:
-                Pocketcasts.Network.instances[id].update(**kwargs)
+                Pocketcasts.Network.instances[id]._update(**kwargs)
             return Pocketcasts.Network.instances[id]
         
 
@@ -57,8 +56,6 @@ class Pocketcasts(object):
         """
         self._logged_in = False
         self._token = ""
-
-        self._session = requests.Session()
 
     def login(self, username, password):
         """Authenticate using "https://api.pocketcasts.com/user/login"
@@ -289,9 +286,15 @@ class Pocketcasts(object):
         page = self._post_with_auth("https://api.pocketcasts.com/up_next/list", data)
         return self._create_list_episodes(page.json()['episodes'])
 
+    def subscribe_podcast(self, podcast_uuid):
+        data = f'{{"uuid":{podcast_uuid}}}'
+        self._post_with_auth('https://api.pocketcasts.com/user/podcast/subscribe', data)
 
-    def unsubscribe_podcast(self, podcast):
-        pass
+    def unsubscribe_podcast(self, podcast_uuid):
+        data = f'{{"uuid":{podcast_uuid}}}'
+        self._post_with_auth('https://api.pocketcasts.com/user/podcast/unsubscribe', data)
 
     def search_podcasts(self, search_str):
-        pass
+        data = f'{{"term":"{search_str}"}}'
+        page = self._post_with_auth('https://api.pocketcasts.com/discover/search', data)
+        return self._create_list_podcasts(page.json()['podcasts'])
