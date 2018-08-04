@@ -1,79 +1,60 @@
+import pytest
 import os
-import pocketcasts
-
 
 USERNAME = os.environ.get('POCKETCAST_USER')
 PASSWORD = os.environ.get('POCKETCAST_PASSWORD')
 
-if USERNAME is None or PASSWORD is None:
-    raise Exception("Set POCKETCAST_USER and POCKETCAST_PASSWORD environment variables to run tests")
+if USERNAME == None or PASSWORD == None:
+    pytest.skip('No environment variables', allow_module_level=True)
 
-class PocketcastAuthTest(object):
-    client = pocketcasts.Pocketcasts()
-    client.login(USERNAME, PASSWORD)
+@pytest.fixture(scope="module")
+def client():
+    import pocketcasts
 
-    def test_get_podcast(self):
-        response = self.client.get_podcast('12012c20-0423-012e-f9a0-00163e1b201c')
+    c = pocketcasts.Pocketcasts()
+    c.login(USERNAME, PASSWORD)
+    return c
 
-    def test_get_podcast_episodes(self):
-        response = self.pocket.get_podcast_episodes(self.pocket.get_trending()[0])
+def test_get_episode(client):
+    episode = client.get_episode("7b28c700-d4f1-0134-ebdd-4114446340cb")
+    assert type(episode) == client.Episode
 
-    def test_get_episode(self):
-        pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
-        self.pocket.get_episode(pod, "7b28c700-d4f1-0134-ebdd-4114446340cb")
+def test_get_podcast(client):
+    client.get_podcast('12012c20-0423-012e-f9a0-00163e1b201c')
 
-    def test_get_starred(self):
-        self.pocket.get_starred()
+def test_get_episode_notes(client):
+    client.get_episode_notes('a35748e0-bb4d-0134-10a8-25324e2a541d')
 
-    def test_search_podcasts(self):
-        self.pocket.search_podcasts('test')
+def test_get_subscribed_podcasts(client):
+    client.get_subscribed_podcasts()
 
-    def test_subscribe_functions(self):
-        pod = self.pocket.get_podcast("da9bb800-e230-0132-0bd1-059c869cc4eb")
-        pod.subscribed = True
-        pod.subscribed = False
+def test_get_new_releases(client):
+    client.get_new_releases()
 
-    def test_get_episode_notes(self):
-        response = self.pocket.get_episode_notes('a35748e0-bb4d-0134-10a8-25324e2a541d')
+def test_get_in_progress(client):
+    client.get_in_progress()
 
-    def test_get_subscribed_podcasts(self):
-        response = self.pocket.get_subscribed_podcasts()
+def test_get_starred(client):
+    client.get_starred()
 
-    def test_get_new_releases(self):
-        response = self.pocket.get_new_releases()
+def test_update_starred(client):
+    client.update_starred('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a', True)
+    episode = client.get_episode('e92551b1-8eda-4cb1-9f04-4b3dea78829a')
+    assert episode.starred == True
+    client.update_starred('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a', False)
+    episode.update()
+    assert episode.starred == False
 
-    def test_get_in_progress(self):
-        response = self.pocket.get_in_progress()
+def test_queue_play_now(client):
+    client.queue_play_now('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a')
 
-    def test_update_playing_status(self):
-        pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
-        epi = self.pocket.get_podcast_episodes(pod)[-1]
-        epi.playing_status = 3
+def test_queue_play_next(client):
+    client.queue_play_next('2e0eb560-5950-0136-fa7c-0fe84b59566d', 'e92551b1-8eda-4cb1-9f04-4b3dea78829a')
 
-    def test_invalid_update_playing_status(self):
-        pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
-        epi = self.pocket.get_podcast_episodes(pod)[-1]
-        with self.assertRaises(Exception) as context:
-            epi.playing_status = 'invalid'
-            self.assertTrue('Sorry your update failed.' in context.exception)
+def test_get_queue(client):
+    queue = client.get_queue()
+    assert type(queue) == list
 
-    def test_update_played_position(self):
-        pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
-        epi = self.pocket.get_podcast_episodes(pod)[-1]
-        epi.played_up_to = 2
-
-    def test_invalid_played_position(self):
-        pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
-        epi = self.pocket.get_podcast_episodes(pod)[-1]
-        with self.assertRaises(Exception) as context:
-            epi.played_up_to = 'invalid'
-            self.assertTrue('Sorry your update failed.' in context.exception)
-
-    def test_update_starred(self):
-        pod = self.pocket.get_podcast("12012c20-0423-012e-f9a0-00163e1b201c")
-        epi = self.pocket.get_podcast_episodes(pod)[-1]
-        epi.starred = True
-        epi.starred = False
-
-if __name__ == '__main__':
-    unittest.main()
+def test_subscribe_unsubscribe_podcast(client):
+    client.subscribe_podacast('2e0eb560-5950-0136-fa7c-0fe84b59566d')
+    client.unsubscribe_podacast('2e0eb560-5950-0136-fa7c-0fe84b59566d')

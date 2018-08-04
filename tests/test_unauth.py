@@ -77,3 +77,8 @@ def test_queue_play_next(client):
 def test_get_queue(client):
     queue = client.get_queue()
     assert type(queue) == list
+
+@pytest.mark.xfail
+def test_subscribe_unsubscribe_podcast(client):
+    client.subscribe_podacast('2e0eb560-5950-0136-fa7c-0fe84b59566d')
+    client.unsubscribe_podacast('2e0eb560-5950-0136-fa7c-0fe84b59566d')
